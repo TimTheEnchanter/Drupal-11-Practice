@@ -1,0 +1,5 @@
+name: 'Awesome Chat'
+type: module
+description: 'My awesome chat module'
+package: Awesome Package
+core_version_requirement: ^10 || ^11

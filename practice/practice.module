@@ -1,0 +1,16 @@
+<?php
+/**
+ * @file
+ * Contains the functionality for practice.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function practice_help($route_name, \Drupal\Core\Routing\RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.practice':
+      return t('This is the help text for Practice.');
+  }
+}
+          
