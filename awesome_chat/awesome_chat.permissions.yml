@@ -1,0 +1,6 @@
+administer awesome_chat configuration:
+  title: 'Administer awesome_chat configuration'
+add awesome_chat member:
+  title: 'Add awesome_chat member'
+remove awesome_chat member:
+  title: 'Remove awesome_chat member'
