@@ -14,11 +14,11 @@ final class AwesomeChatController extends ControllerBase {
   /**
    * Builds the response.
    */
-  public function __invoke(): array {
+  public function chat(): array {
 
     $build['content'] = [
       '#type' => 'item',
-      '#markup' => $this->t('It works!'),
+      '#markup' => $this->t('Hello from Awesome Chat!'),
     ];
 
     return $build;
