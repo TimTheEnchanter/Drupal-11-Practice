@@ -1,3 +1,5 @@
+<?php
+
 namespace Drupal\awesome_chat\Form;
 
 use Drupal\Core\Form\FormBase;
