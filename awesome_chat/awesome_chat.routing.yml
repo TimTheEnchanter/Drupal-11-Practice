@@ -1,7 +1,15 @@
-awesome_chat.first_route:
-  path: '/awesome-chat'
+awesome_chat.example:
+  path: '/awesome-chat/example'
   defaults:
-    _title: 'Awesome chat!!!'
-    _controller: '\Drupal\awesome_chat\Controller\AwesomeChatController::chat'
+    _title: 'Example'
+    _controller: '\Drupal\awesome_chat\Controller\AwesomeChatController'
   requirements:
     _permission: 'access content'
+
+awesome_chat.route_two:
+  path: '/awesome-chat/test'
+  defaults:
+    _title: 'Test'
+    _controller: '\Drupal\awesome_chat\Controller\AwesomeChatController::test'
+  requirements:
+    _user_is_logged_in: 'TRUE'
