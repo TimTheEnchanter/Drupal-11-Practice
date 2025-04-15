@@ -13,3 +13,11 @@ awesome_chat.route_two:
     _controller: '\Drupal\awesome_chat\Controller\AwesomeChatController::test'
   requirements:
     _user_is_logged_in: 'TRUE'
+
+awesome_chat.form_route:
+  path: '/awesome-chat/form'
+  defaults:
+    _form: '\Drupal\awesome_chat\Form\MyForm'
+    _title: 'My Form'
+  requirements:
+    _user_is_logged_in: 'TRUE'
