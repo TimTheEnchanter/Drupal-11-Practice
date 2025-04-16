@@ -1,0 +1,55 @@
+<?php
+
+use Drupal\Core\Database\Schema\InstallDefinition;
+
+/**
+ * Implements hook_schema().
+ */
+
+function awesome_chat_schema(InstallDefinition $install_schema) {
+  $schema['my_module_basic_info'] = [
+    'description' => 'Stores basic information submitted through the form.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique ID.',
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The name entered by the user.',
+      ],
+      'email' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The email address entered by the user.',
+      ],
+      'age' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'The age entered by the user.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Timestamp of when the entry was created.',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  return $schema;
+}
+
+function my_module_install() {
+  
+}
+
+function my_module_uninstall() {
+  
+}

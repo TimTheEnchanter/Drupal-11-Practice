@@ -38,8 +38,31 @@ final class MyForm extends FormBase {
     return $form;
   }
 
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    if (strlen($form_state->getValue('name')) < 5) {
+      $form_state->setErrorByName('name', $this->t('Your name must be at least 5 characters long.'));
+    }
+
+    if (!\Drupal::service('email.validator')->isValid($form_state->getValue('email'))) {
+      $form_state->setErrorByName('email', $this->t('The email address you entered is not valid.'));
+    }
+
+    if ($form_state->getValue('age') < 18) {
+      $form_state->setErrorByName('age', $this->t('You must be at least 18 years old.'));
+    }
+  }
+
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->messenger()->addMessage($this->t('Your name is: @name', ['@name' => $form_state->getValue('name')]));
+
+    $name = $form_state->getValue('name');
+    $email = $form_state->getValue('email');
+    $age = $form_state->getValue('age');
+
+    $this->messenger()->addMessage($this->t('Thank you, @name! Your email address is @email and your age is @age.', [
+      '@name' => $name,
+      '@email' => $email,
+      '@age' => $age,
+    ]));
   }
 
 }
