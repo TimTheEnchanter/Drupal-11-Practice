@@ -7,7 +7,7 @@ use Drupal\Core\Database\Schema\InstallDefinition;
  */
 
 function awesome_chat_schema(InstallDefinition $install_schema) {
-  $schema['my_module_basic_info'] = [
+  $schema['awesome_chat_basic_info'] = [
     'description' => 'Stores basic information submitted through the form.',
     'fields' => [
       'id' => [
@@ -46,10 +46,10 @@ function awesome_chat_schema(InstallDefinition $install_schema) {
   return $schema;
 }
 
-function my_module_install() {
+function awesome_chat_install() {
   
 }
 
-function my_module_uninstall() {
+function awesome_chat_uninstall() {
   
 }
