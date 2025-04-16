@@ -16,7 +16,20 @@ final class MyForm extends FormBase {
     $form['name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Your Name'),
+      '#description' => $this->t('Please enter your full name.'),
       '#required' => TRUE,
+    ];
+    $form['email'] = [
+      '#type' => 'email',
+      '#title' => $this->t('Your Email Address'),
+      '#required' => TRUE,
+    ];
+
+    $form['age'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Your Age'),
+      '#min' => 1,
+      '#max' => 150,
     ];
     $form['actions']['submit'] = [
       '#type' => 'submit',
