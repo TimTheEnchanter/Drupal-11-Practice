@@ -4,6 +4,8 @@ namespace Drupal\awesome_chat\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Database\Connection;
+use Symfony\Component\DependencyInjection\ContainerInterface; //Not sure about this one lol
 
 
 final class MyForm extends FormBase {
