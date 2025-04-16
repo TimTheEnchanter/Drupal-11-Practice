@@ -21,3 +21,11 @@ awesome_chat.form_route:
     _title: 'My Form'
   requirements:
     _user_is_logged_in: 'TRUE'
+
+awesome_chat.display_data:
+  path: '/awesome-chat/display'
+  defaults:
+    _controller: '\Drupal\awesome_chat\Controller\DataDisplayController::displayData'
+    _title: 'Basic Information Data'
+  requirements:
+    _access: 'TRUE'
