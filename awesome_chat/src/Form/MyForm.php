@@ -8,6 +8,16 @@ use Drupal\Core\Form\FormStateInterface;
 
 final class MyForm extends FormBase {
 
+  public function __construct(Connection $database) {
+    $this->database = $database;
+  }
+
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('database')
+    );
+  }
+
   public function getFormId() {
     return 'awesome_chat_form';
   }
@@ -58,11 +68,26 @@ final class MyForm extends FormBase {
     $email = $form_state->getValue('email');
     $age = $form_state->getValue('age');
 
-    $this->messenger()->addMessage($this->t('Thank you, @name! Your email address is @email and your age is @age.', [
-      '@name' => $name,
-      '@email' => $email,
-      '@age' => $age,
-    ]));
+    try {
+      $this->database->insert('awesome_chat_basic_info')
+        ->fields([
+          'name' => $name,
+          'email' => $email,
+          'age' => $age,
+          'created' => \Drupal::time()->getRequestTime(),
+        ])
+        ->execute();
+
+      $this->messenger()->addMessage($this->t('Thank you, @name! Your email address is @email and your age is @age.', [
+        '@name' => $name,
+        '@email' => $email,
+        '@age' => $age,
+      ]));
+    }
+    catch (\Exception $e) {
+      $this->messenger()->addError($this->t('An error occurred while saving your information. Please try again.'));
+      $this->logger('my_module')->error('Database error saving submission: @error', ['@error' => $e->getMessage()]);
+    }
   }
 
 }
