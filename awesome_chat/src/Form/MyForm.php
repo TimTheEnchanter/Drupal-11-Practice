@@ -6,7 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 
-class MyForm extends FormBase {
+final class MyForm extends FormBase {
 
   public function getFormId() {
     return 'awesome_chat_form';
