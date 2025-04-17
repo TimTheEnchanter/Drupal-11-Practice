@@ -4,8 +4,13 @@ use Drupal\Core\Database\Schema\InstallDefinition;
 
 /**
  * Implements hook_schema().
+ *
+ * @param \Drupal\Core\Database\Schema\InstallDefinition $install_schema
+ * The schema definition.
+ *
+ * @return array
+ * The schema definition.
  */
-
 function awesome_chat_schema(InstallDefinition $install_schema) {
   $schema['awesome_chat_basic_info'] = [
     'description' => 'Stores basic information submitted through the form.',
@@ -47,9 +52,9 @@ function awesome_chat_schema(InstallDefinition $install_schema) {
 }
 
 function awesome_chat_install() {
-  
+
 }
 
 function awesome_chat_uninstall() {
-  
+
 }
