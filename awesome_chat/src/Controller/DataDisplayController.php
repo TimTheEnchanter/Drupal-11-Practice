@@ -5,6 +5,8 @@ namespace Drupal\awesome_chat\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 /**
  * Controller for displaying data from the awesome_chat_basic_info table.
@@ -45,7 +47,7 @@ class DataDisplayController extends ControllerBase {
    */
   public function displayData() {
     $query = $this->database->select('awesome_chat_basic_info', 'm');
-    $query->fields('m', ['name', 'email', 'age', 'created']);
+    $query->fields('m', ['id','name', 'email', 'age', 'created']);
     $query->orderBy('created', 'DESC');
     $results = $query->execute()->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -54,16 +56,42 @@ class DataDisplayController extends ControllerBase {
       $this->t('Email'),
       $this->t('Age'),
       $this->t('Created'),
+      $this->t('Actions'),
     ];
 
     $rows = [];
     foreach ($results as $record) {
-      $rows[] = [
-        $record['name'],
-        $record['email'],
-        $record['age'],
-        \Drupal::service('date.formatter')->format($record['created'], 'short'),
-      ];
+
+        $edit_url = Url::fromRoute('awesome_chat.edit_item', ['id' => $record['id']]);
+        $delete_url = Url::fromRoute('awesome_chat.delete_item', ['id' => $record['id']]); // Link to the confirmation form
+  
+        $edit_link = [
+          '#type' => 'link',
+          '#title' => $this->t('Edit'),
+          '#url' => $edit_url,
+        ];
+  
+        $delete_link = [
+          '#type' => 'link',
+          '#title' => $this->t('Delete'),
+          '#url' => $delete_url,
+        ];
+  
+        $actions = [
+          '#type' => 'operations',
+          '#links' => [
+            'edit' => $edit_link,
+            'delete' => $delete_link,
+          ],
+        ];
+  
+        $rows[] = [
+          $record['name'],
+          $record['email'],
+          $record['age'],
+          \Drupal::service('date.formatter')->format($record['created'], 'short'),
+          $actions,
+        ];
     }
 
     $build = [

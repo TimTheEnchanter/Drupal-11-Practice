@@ -29,3 +29,19 @@ awesome_chat.display_data:
     _title: 'Basic Information Data'
   requirements:
     _access: 'TRUE'
+
+awesome_chat.edit_data:
+  path: '/awesome-chat/edit/{id}'
+  defaults:
+    _controller: '\Drupal\awesome_chat\Controller\DataManipulationController::editData'
+    _title: 'Edit Data'
+  requirements:
+    _access: 'TRUE'
+
+awesome_chat.delete_data:
+  path: '/awesome-chat/delete/{id}'
+  defaults:
+    _controller: '\Drupal\awesome_chat\Controller\DataManipulationController::deleteData'
+    _title: 'Delete Data'
+  requirements:
+    _access: 'TRUE'
