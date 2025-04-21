@@ -81,7 +81,7 @@ final class MyForm extends FormBase {
         ->execute();
 
       $this->messenger()->addMessage($this->t('Thank you, @name! Your information has been saved.', ['@name' => $name]));
-      $this->logger('my_module')->notice('New submission from @name with email @email and age @age.', [
+      $this->logger('awesome_chat')->notice('New submission from @name with email @email and age @age.', [
         '@name' => $name,
         '@email' => $email,
         '@age' => $age,
@@ -89,7 +89,7 @@ final class MyForm extends FormBase {
     }
     catch (\Exception $e) {
       $this->messenger()->addError($this->t('An error occurred while saving your information. Please try again.'));
-      $this->logger('my_module')->error('Database error saving submission: @error', ['@error' => $e->getMessage()]);
+      $this->logger('awesome_chat')->error('Database error saving submission: @error', ['@error' => $e->getMessage()]);
     }
   }
 
