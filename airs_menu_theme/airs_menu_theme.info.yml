@@ -1,0 +1,8 @@
+name: AIRS Menu Theme
+type: theme
+base theme: bootstrap5
+description: 'Custom Bootstrap 5 sub-theme for AIRS project navigation'
+core_version_requirement: ^11
+libraries:
+  - airs_menu_theme/global-styling
+  - airs_menu_theme/bootstrap-js
