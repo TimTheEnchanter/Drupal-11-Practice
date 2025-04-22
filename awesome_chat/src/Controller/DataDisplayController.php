@@ -99,6 +99,11 @@ class DataDisplayController extends ControllerBase {
       '#header' => $header,
       '#rows' => $rows,
       '#attributes' => ['class' => ['table', 'table-striped']], // Bootstrap table classes
+      '#attached' => [
+            'library' => [
+            'airs_menu_theme/datatables', // Replace 'your_theme' with your theme's machine name
+            ],
+       ],
     ];
 
     return $build;
