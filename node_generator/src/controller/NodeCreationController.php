@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\awesome_chat\Controller;
+namespace Drupal\node_generator\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;

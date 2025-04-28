@@ -45,11 +45,3 @@ awesome_chat.delete_data:
     _title: 'Delete Data'
   requirements:
     _access: 'TRUE'
-
-awesome_chat.create_node:
-  path: '/create-a-node'
-  defaults:
-    _controller: '\Drupal\awesome_chat\Controller\NodeCreationController::createMyNode'
-    _title: 'Create A Node'
-  requirements:
-    _access: 'TRUE' # Adjust permissions as needed
