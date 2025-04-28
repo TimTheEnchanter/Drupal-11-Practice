@@ -1,0 +1,5 @@
+name: 'Node Generator'
+type: module
+description: 'Programmatically generating nodes'
+package: Custom
+core_version_requirement: ^10 || ^11
