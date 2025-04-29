@@ -9,16 +9,14 @@ function node_generator_node_insert(Node $node) {
     $source_title = $node->getTitle();
     $source_author_id = $node->getOwnerId();
     
-    $source_some_data = $node->get('field_some_data')->value;
+    $parent_id = $node->id();
   
     $new_node = Node::create([
       'type' => 'sub_type_content_test', // Replace with the target content type's machine name
       'title' => 'Automatic Node Based on: ' . $source_title,
       'uid' => $source_author_id,
       'status' => 1, 
-      'field_related_source_node' => $node->id(),
-      'field_some_other_data' => 'Some static data for the new node',
-      'field_copied_data' => $source_some_data,
+      'field_parent_id' => $parent_id,
     ]);
 
     try {

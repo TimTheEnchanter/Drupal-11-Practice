@@ -36,8 +36,8 @@ class NodeCreationController extends ControllerBase {
     ]);
 
     $node->setTitle('My Programmatically Created Node at ' . date('Y-m-d H:i:s'));
-    $node->set('body', [
-      'value' => 'This node was created programmatically by the awesome_chat at ' . date('Y-m-d H:i:s') . '.',
+    $node->set('field_body', [
+      'value' => 'This node was created programmatically by the node_generator plugin at ' . date('Y-m-d H:i:s') . '.',
       'format' => 'basic_html',
     ]);
 
@@ -49,7 +49,7 @@ class NodeCreationController extends ControllerBase {
       ]));
     } catch (\Exception $e) {
       $this->messenger()->addError($this->t('An error occurred while creating the node: @error', ['@error' => $e->getMessage()]));
-      \Drupal::logger('your_module')->error('Error creating node: @error', ['@error' => $e->getMessage()]);
+      \Drupal::logger('node_generator')->error('Error creating node: @error', ['@error' => $e->getMessage()]);
     }
 
     return new RedirectResponse(Url::fromRoute('entity.node.canonical', ['node' => $node->id()])->toString());
