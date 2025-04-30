@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\node\Entity\NodeType;
+
 function node_generator_requirements($phase) {
   $requirements = [];
 
@@ -24,4 +26,44 @@ function node_generator_requirements($phase) {
   }
 
   return $requirements;
+}
+
+function node_generator_install() {
+  // Attempt to run the Drush command to install dependencies.
+  if (drush_command_exists('node_generator:install-dependencies')) {
+    drush_invoke_process('@self', 'node_generator:install-dependencies');
+  } else {
+    \Drupal::messenger()->addWarning(t('Could not automatically install dependencies. Please ensure Drush is installed and run the command: `drush your_module:install-dependencies`'));
+  }
+
+  // Create content types.
+  node_generator_create_content_types();
+}
+
+function node_generator_create_content_types() {
+  // Define the properties for your first content type.
+  $contentType1 = NodeType::create([
+    'type' => 'your_content_type_one',
+    'name' => 'Your Content Type One',
+    'label' => 'Your Content Type One',
+    'description' => 'This is the first content type created by Your Module.',
+    'display_submitted' => FALSE,
+  ]);
+  $contentType1->save();
+
+  \Drupal::messenger()->addMessage(t('Content type %type created.', ['%type' => $contentType1->label()]));
+
+  // Define the properties for your second content type.
+  $contentType2 = NodeType::create([
+    'type' => 'your_content_type_two',
+    'name' => 'Your Content Type Two',
+    'label' => 'Your Content Type Two',
+    'description' => 'This is the second content type created by Your Module.',
+    'display_submitted' => TRUE,
+  ]);
+  $contentType2->save();
+
+  \Drupal::messenger()->addMessage(t('Content type %type created.', ['%type' => $contentType2->label()]));
+
+  // You can add more content type creation logic here.
 }
