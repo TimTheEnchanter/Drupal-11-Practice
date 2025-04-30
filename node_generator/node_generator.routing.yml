@@ -4,4 +4,4 @@ node_generator.create_node:
     _controller: '\Drupal\node_generator\Controller\NodeCreationController::createMyNode'
     _title: 'Create A Node'
   requirements:
-    _access: 'TRUE' # Adjust permissions as needed
+    _access: 'TRUE'

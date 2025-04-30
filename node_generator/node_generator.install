@@ -1,6 +1,27 @@
 <?php
 
-/**
- * @file
- * Install, update and uninstall functions for the Node Generator module.
- */
+function node_generator_requirements($phase) {
+  $requirements = [];
+
+  if ($phase == 'runtime') {
+    // Check if the 'field' module is enabled.
+    if (!\Drupal::moduleHandler()->moduleExists('field')) {
+      $requirements['node_generator_field_dependency'] = [
+        'title' => t('Node Generator: Field Dependency'),
+        'value' => t('The Field module is required for Node Generator.'),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+
+    // Check if a specific contributed module is enabled.
+    if (!\Drupal::moduleHandler()->moduleExists('token')) {
+      $requirements['node_generator_token_dependency'] = [
+        'title' => t('Node Generator: Token Dependency'),
+        'value' => t('The Token module is recommended for full functionality of Node Generator.'),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+  }
+
+  return $requirements;
+}
