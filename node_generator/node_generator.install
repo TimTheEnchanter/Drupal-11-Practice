@@ -32,7 +32,7 @@ function node_generator_requirements($phase) {
 
 function node_generator_install() {
   // Check if Drush is available.
-  if (drush_version()) {
+  /*if (drush_version()) {
     // Check if the custom Drush command exists.
     $command_info = drush_command('node_generator:install-dependencies');
     if ($command_info) {
@@ -43,7 +43,7 @@ function node_generator_install() {
     }
   } else {
     \Drupal::messenger()->addWarning(t('Drush is not available. Could not automatically install dependencies. Please run the command manually: `drush node_generator:install-dependencies`'));
-  }
+  }*/
 
   // Create content types.
   node_generator_create_content_types();
