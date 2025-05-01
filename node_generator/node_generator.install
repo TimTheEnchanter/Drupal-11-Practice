@@ -1,6 +1,8 @@
 <?php
 
 use Drupal\node\Entity\NodeType;
+use Drush\Commands\DrushCommands;
+use Drupal\Core\Drush\DrushCommands;
 
 function node_generator_requirements($phase) {
   $requirements = [];
