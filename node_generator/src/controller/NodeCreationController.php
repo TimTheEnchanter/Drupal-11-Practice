@@ -55,4 +55,37 @@ class NodeCreationController extends ControllerBase {
     return new RedirectResponse(Url::fromRoute('entity.node.canonical', ['node' => $node->id()])->toString());
   }
 
+  public function createMyNode2() {
+    $user = $this->entityTypeManager->getStorage('user')->load(1);
+
+    $node = $this->entityTypeManager->getStorage('node')->create([
+      'type' => 'test_content_type',
+      'uid' => $user->id(),
+      'status' => 1,
+      'promote' => 0,
+      'sticky' => 0,
+      'created' => \Drupal::time()->getRequestTime(),
+      'changed' => \Drupal::time()->getRequestTime(),
+    ]);
+
+    $node->setTitle('My Programmatically Created Node at ' . date('Y-m-d H:i:s'));
+    $node->set('field_body', [
+      'value' => 'This node was created programmatically by the node_generator plugin at ' . date('Y-m-d H:i:s') . '.',
+      'format' => 'basic_html',
+    ]);
+
+    try {
+      $node->save();
+      $this->messenger()->addMessage($this->t('Node "@title" (ID: @nid) created successfully.', [
+        '@title' => $node->getTitle(),
+        '@nid' => $node->id(),
+      ]));
+    } catch (\Exception $e) {
+      $this->messenger()->addError($this->t('An error occurred while creating the node: @error', ['@error' => $e->getMessage()]));
+      \Drupal::logger('node_generator')->error('Error creating node: @error', ['@error' => $e->getMessage()]);
+    }
+
+    return new RedirectResponse(Url::fromRoute('entity.node.canonical', ['node' => $node->id()])->toString());
+  }
+
 }
