@@ -5,3 +5,11 @@ node_generator.create_node:
     _title: 'Create A Node'
   requirements:
     _access: 'TRUE'
+
+node_generator.programmatic_node_list:
+  path: '/programmatic-nodes'
+  defaults:
+    _controller: '\Drupal\node_generator\Controller\NodeListController::displayNodeList'
+    _title: 'Programmatic Nodes'
+  requirements:
+    _access: 'TRUE'

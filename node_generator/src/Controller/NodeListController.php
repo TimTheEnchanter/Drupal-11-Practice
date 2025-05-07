@@ -46,7 +46,7 @@ class NodeListController extends ControllerBase {
    */
   public function displayNodeList() {
     $query = $this->entityTypeManager->getStorage('node')->getQuery();
-    $query->condition('type', 'your_programmatic_content_type'); // Filter by your content type
+    $query->condition('type', 'test_content_type'); // Filter by your content type
     $query->sort('created', 'DESC');
     $nids = $query->execute();
 
@@ -87,8 +87,8 @@ class NodeListController extends ControllerBase {
       '#attributes' => ['id' => 'programmatic-nodes-table', 'class' => ['table', 'table-striped']],
       '#attached' => [
         'library' => [
-          'your_theme/datatables', // Replace 'your_theme' with your theme's machine name
-          'your_theme/datatables_init', // Your DataTables initialization script
+          'airs_menu_theme/datatables', // Replace 'your_theme' with your theme's machine name
+          'airs_menu_theme/datatables_init', // Your DataTables initialization script
         ],
       ],
     ];
