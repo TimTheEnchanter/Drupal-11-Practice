@@ -16,3 +16,11 @@ datatables:
     https:////cdn.datatables.net/2.2.2/js/dataTables.min.js: { type: external, minified: true }    # Path to your downloaded or CDN JS file
   dependencies:
     - core/jquery
+
+datatables_init:
+  version: VERSION
+  js:
+    js/datatables_init.js: {}
+  dependencies:
+    - core/jquery
+    - airs_menu_theme/datatables # Ensure your DataTables library is a dependency
