@@ -1,41 +1,16 @@
 <?php
 
-/**
- * @file
- * Module file for Examples for Developers.
- *
- * This file serves as a stub file for the many Examples modules in the
- * @link http://drupal.org/project/examples Examples for Developers Project @endlink
- * which you can download and experiment with.
- *
- * One might say that examples.module is an example of documentation. However,
- * note that the example submodules define many doxygen groups, which may or
- * may not be a good strategy for other modules.
- */
-
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 
-/**
- * @defgroup examples Examples
- * @{
- * Well-documented API examples for a broad range of Drupal core functionality.
- *
- * Developers can learn how to use a particular API quickly by experimenting
- * with the examples, and adapt them for their own use.
- *
- * Download the Examples for Developers Project (and participate with
- * submissions, bug reports, patches, and documentation) at
- * http://drupal.org/project/examples
- */
 
 /**
  * Implements hook_toolbar().
  */
-function examples_toolbar() {
+function upload_test_toolbar() {
   // First, build an array of all example modules and their routes.
   // We resort to this hard-coded way so as not to muck up each example.
-  $examples = _examples_toolbar_routes();
+  $examples = _upload_test_toolbar_routes();
 
   // Build a list of links for the menu.
   $links = [];
@@ -104,19 +79,8 @@ function examples_toolbar() {
   return $items;
 }
 
-/**
- * Get a list of toolbar links to provide.
- *
- * We've factored this list into a function so that we can use it to test
- * toolbar routes.
- *
- * This function is for internal use.
- *
- * @return string[]
- *   Keyed array of toolbar routes. Keys are the module name which supplies the
- *   route.
- */
-function _examples_toolbar_routes() {
+
+function _upload_test_toolbar_routes() {
   return [
     'ajax_example' => 'ajax_example.description',
     'batch_example' => 'batch_example.form',
@@ -150,7 +114,3 @@ function _examples_toolbar_routes() {
     'tour_example' => 'tour_example.description',
   ];
 }
-
-/**
- * @} End of 'defgroup examples'.
- */

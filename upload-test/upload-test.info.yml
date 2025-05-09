@@ -1,0 +1,9 @@
+name: Upload Test
+type: module
+description: 'Working on a uploading csv and image files.'
+package: Upload
+core_version_requirement: ^10 || ^11
+dependencies:
+  - drupal:field
+  - drupal:file_entity
+  - drupal:file
