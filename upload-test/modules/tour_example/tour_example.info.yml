@@ -1,9 +1,0 @@
-name: 'Tour Example'
-type: module
-description: 'Demonstrates how to create a tour'
-package: Example modules
-core_version_requirement: ^8.8 || ^9
-dependencies:
-  - drupal:tour
-  - drupal:toolbar
-  - examples:examples

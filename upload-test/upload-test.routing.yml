@@ -1,0 +1,7 @@
+upload-test.upload_test_form:
+  path: '/upload-test-form'
+  defaults:
+    _form:  '\Form\UploadTestForm'
+    _title: 'Upload Test Form'
+  requirements:
+    _permission: 'access content'

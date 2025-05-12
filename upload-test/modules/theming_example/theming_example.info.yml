@@ -1,5 +1,0 @@
-name: Theming example
-type: module
-description: An example module showing how to use theming.
-package: Example modules
-core_version_requirement: ^8.8 || ^9

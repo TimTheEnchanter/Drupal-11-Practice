@@ -1,7 +1,0 @@
-name: 'Session Example'
-type: module
-description: 'An example of how to use session'
-package: Example modules
-core_version_requirement: ^8.8 || ^9
-dependencies:
-  - examples:examples
