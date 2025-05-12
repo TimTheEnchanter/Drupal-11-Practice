@@ -1,7 +1,7 @@
 upload-test.upload_test_form:
   path: '/upload-test-form'
   defaults:
-    _form:  '\Form\UploadTestForm'
+    _form:  '\Form\UploadTest'
     _title: 'Upload Test Form'
   requirements:
     _user_is_logged_in: 'TRUE'
