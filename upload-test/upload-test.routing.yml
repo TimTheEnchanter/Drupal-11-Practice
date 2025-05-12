@@ -4,4 +4,4 @@ upload-test.upload_test_form:
     _form:  '\Form\UploadTestForm'
     _title: 'Upload Test Form'
   requirements:
-    _permission: 'access content'
+    _user_is_logged_in: 'TRUE'
