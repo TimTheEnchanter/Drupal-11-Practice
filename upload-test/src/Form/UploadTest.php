@@ -108,7 +108,7 @@ class UploadTest extends FormBase {
     }
 
     // Process the CSV file (example: read the first line).
-   $csv_uri = $csv_file->getFileUri();
+    $csv_uri = $csv_file->getFileUri();
     $handle = fopen($csv_uri, 'r');
     $csv_data = [];
     if ($handle) {
@@ -120,6 +120,13 @@ class UploadTest extends FormBase {
     }
     else {
       $this->messenger()->addError($this->t('Could not open the csv file.'));
+      return;
+    }
+
+    $header = fgetcsv($handle); // Get the header row.
+    if ($header === FALSE) {
+      $this->messenger()->addError($this->t('Could not read the CSV header.'));
+      fclose($handle);
       return;
     }
 
@@ -155,6 +162,53 @@ class UploadTest extends FormBase {
     $this->messenger()->addMessage($this->t('Node created successfully.'));
 
     $this->loggerFactory->get('my_node_creator')->notice('Node created');
+
+
+    //Please actually work
+    $nodes_created = 0;
+    while (($row = fgetcsv($handle)) !== FALSE) {
+      // Combine header and row data.
+      $data = array_combine($header, $row);
+       if ($data) {
+        // Create a new node for each row.
+        $anomaly_location = $data['lat'].", ".$data['lon'];
+        $anomaly_status = $data['status'];
+        $anomaly_type = $data['type'];
+
+        $anomaly_node = Node::create([
+          'type' => 'anomaly',
+          'field_anomaly_location' => $anomaly_location,
+          'field_qc_status' => $anomaly_status,
+          'field_anomaly_type' => $anomaly_type,
+          
+        ]);
+
+        // Save the node.
+        $anomaly_node->save();
+
+        $anomaly_history_date = $data['anomDate'];
+        $anomaly_history_photos = $data['pics'];
+
+        $anomaly_history_node = Node::create([
+          'type' => 'anomaly_history',
+          'field_anomaly' => $anomaly_node,
+          'field_date' => $anomaly_history_date,
+          'field_patrol_photos' => $anomaly_history_photos,
+          
+        ]);
+
+        // Save the node.
+        $anomaly_history_node->save();
+
+        $nodes_created++;
+       }
+    }
+    fclose($handle);
+
+
+    $this->messenger()->addMessage($this->t('@count nodes created successfully.', ['@count' => $nodes_created]));
+
+    $this->loggerFactory->get('my_node_creator')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
     // Redirect to the node's view page.
     $form_state->setRedirect('entity.node.canonical', ['node' => $node->id()]);
 
