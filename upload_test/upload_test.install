@@ -1,0 +1,68 @@
+<?php
+
+use Drupal\node\Entity\NodeType;
+
+
+
+function upload_test_install() {
+  // Check if Drush is available.
+
+  // Create content types.
+  upload_test_create_content_types();
+}
+
+function upload_test_create_content_types() {
+  // Define the properties for your first content type.
+
+  if (NodeType::load('anomaly')) {
+
+  }
+  else{
+      $anomaly = NodeType::create([
+        'type' => 'anomaly',
+        'name' => 'Anomaly',
+        'label' => 'Anomaly',
+        'description' => 'Any unusual findings of a surveillance field during a patrol.',
+        'display_submitted' => FALSE,
+      ]);
+      $anomaly->save();
+
+      \Drupal::messenger()->addMessage(t('Content type %type created.', ['%type' => $anomaly->label()]));
+  }
+  
+
+  if (NodeType::load('anomaly_history')) {
+
+  }
+  else{
+      $anomaly_history = NodeType::create([
+        'type' => 'anomaly_history',
+        'name' => 'Anomaly History',
+        'label' => 'Anomaly History',
+        'description' => 'A collection of the history of all anomalies, including newly found as well as any changes sighted.',
+        'display_submitted' => FALSE,
+      ]);
+      $anomaly_history->save();
+
+      \Drupal::messenger()->addMessage(t('Content type %type created.', ['%type' => $anomaly_history->label()]));
+  }
+  
+
+  if (NodeType::load('valkyrie_upload')) {
+
+  }
+  else{
+      $valkyrie_upload = NodeType::create([
+        'type' => 'valkyrie_upload',
+        'name' => 'Valkyrie Upload',
+        'label' => 'Valkyrie Upload',
+        'description' => 'Comprised of a CSV and an array of photos from Valkyrie uploaded by crews that inform the patrol report.',
+        'display_submitted' => FALSE,
+      ]);
+      $valkyrie_upload->save();
+
+      \Drupal::messenger()->addMessage(t('Content type %type created.', ['%type' => $valkyrie_upload->label()]));
+  }
+ 
+  // You can add more content type creation logic here.
+}

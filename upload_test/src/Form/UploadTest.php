@@ -48,13 +48,13 @@ class UploadTest extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $form['anomalies_file'] = [
-      '#type' => 'managed_file',
+      '#type' => 'file',
       '#title' =>  $this->t('Valkyrie Anomalies File'),
       '#description' => $this->t('Upload a CSV file.'),
-      '#upload_validators' => [
-        'file_validate_extensions' => ['csv'],
-        'file_validate_mime_type' => ['text/csv'],
-      ],
+      //'#upload_validators' => [
+      //  'file_validate_extensions' => ['csv'],
+      //  'file_validate_mime_type' => ['text/csv'],
+      //],
       '#required' => TRUE,
       '#upload_location' => 'public://csv/',
     ];
@@ -64,10 +64,10 @@ class UploadTest extends FormBase {
       '#title' => $this->t('Patrol Photos'),
       '#description' => $this->t('Upload one or more images.'),
       '#multiple' => TRUE,
-      '#upload_validators' => [
-        'file_validate_extensions' => ['jpg jpeg'],
-        'file_validate_mime_type' => ['image/jpeg'],
-      ],
+      //'#upload_validators' => [
+      //  'file_validate_extensions' => ['jpg jpeg'],
+      //  'file_validate_mime_type' => ['image/jpeg'],
+      //],
       '#required' => TRUE,
       '#upload_location' => 'public://images/',
     ];
@@ -83,6 +83,7 @@ class UploadTest extends FormBase {
  
   public function validateForm(array &$form, FormStateInterface $form_state) {
 
+    /*
     $csv_fid = $form_state->getValue('csv_file')[0]; // Get the file ID.
     if (!$csv_fid) {
       $form_state->setErrorByName('csv_file', $this->t('A CSV file is required.'));
@@ -92,6 +93,7 @@ class UploadTest extends FormBase {
     if (empty($image_fids)) {
       $form_state->setErrorByName('image_files', $this->t('At least one image is required.'));
     }
+      */
   }
 
   
