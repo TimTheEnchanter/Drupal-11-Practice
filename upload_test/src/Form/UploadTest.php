@@ -99,6 +99,7 @@ class UploadTest extends FormBase {
   
   public function submitForm(array &$form, FormStateInterface $form_state) {
     
+    /*
     $csv_fid = $form_state->getValue('csv_file')[0]; // Get the file ID.
     $image_fids = $form_state->getValue('image_files');
 
@@ -213,7 +214,7 @@ class UploadTest extends FormBase {
     $this->loggerFactory->get('my_node_creator')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
     // Redirect to the node's view page.
     $form_state->setRedirect('entity.node.canonical', ['node' => $node->id()]);
-
+    */
   }
 
 }
