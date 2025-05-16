@@ -28,6 +28,80 @@ function upload_test_create_content_types() {
       $anomaly->save();
 
       \Drupal::messenger()->addMessage(t('Content type %type created.', ['%type' => $anomaly->label()]));
+
+      $field_storage = FieldStorageConfig::create([
+        'field_name' => 'field_custom_text',
+        'entity_type' => 'node',
+        'type' => 'text',
+        'settings' => [
+          'max_length' => 255,
+        ],
+      ]);
+      $field_storage->save();
+
+      $field = FieldConfig::create([
+        'field_storage' => $field_storage,
+        'bundle' => 'anomaly',
+        'label' => 'Custom Text Field',
+        'settings' => [
+          'display_summary' => FALSE,
+        ],
+        'form_display_options' => [
+          'type' => 'text_textfield',
+          'weight' => 0,
+        ],
+        'display_options' => [
+          'label' => 'above',
+          'type' => 'string',
+          'weight' => 0,
+        ],
+      ]);
+      $field->save();
+
+      // Create an image field.
+      $field_storage = FieldStorageConfig::create([
+        'field_name' => 'field_custom_image',
+        'entity_type' => 'node',
+        'type' => 'image',
+        'settings' => [
+          'target_type' => 'file',
+          'default_image' => [
+            'uuid' => NULL,
+            'alt' => '',
+            'title' => '',
+            'width' => NULL,
+            'height' => NULL,
+          ],
+          'upload_location' => 'public://custom_images/',
+          'file_extensions' => 'png jpg jpeg gif',
+        ],
+      ]);
+      $field_storage->save();
+
+      $field = FieldConfig::create([
+        'field_storage' => $field_storage,
+        'bundle' => 'my_custom_content_type',
+        'label' => 'Custom Image Field',
+        'settings' => [
+          'alt_field' => TRUE,
+          'title_field' => FALSE,
+        ],
+        'form_display_options' => [
+          'type' => 'image_image',
+          'weight' => 1,
+        ],
+        'display_options' => [
+          'label' => 'above',
+          'type' => 'image',
+          'settings' => [
+            'image_style' => 'medium',
+            'image_link' => '',
+          ],
+          'weight' => 1,
+        ],
+      ]);
+      $field->save();
+
   }
   
 
