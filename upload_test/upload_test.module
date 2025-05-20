@@ -1,73 +1,87 @@
 <?php
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\Entity\File;
 
 function upload_test_form_alter(array &$form, FormStateInterface $form_state, string $form_id) {
   
   if ($form_id == 'upload_test_form') {
     
-    $form['#submit'][] = 'upload_test_upload_test_form_submit';
+    $form['#submit'][] = 'upload_test_process_form_data_hook';
   }
 }
 
-function upload_test_upload_test_form_submit(array &$form, FormStateInterface $form_state) {
-  // Get the form values.
-  $form_values = $form_state->getValues();
+function upload_test_process_form_data_hook(array &$form, FormStateInterface $form_state) {
+
+  $submitted_values = $form_state->getValues();
 
   // Do something with the form data.  For example, log it.
   \Drupal::logger('upload_test')->notice('Form data: @data', [
-    'data' => print_r($form_values, TRUE),
+    'data' => print_r($submitted_values, TRUE),
   ]);
 
   
-  $csv_fid = $form_state->getValue('csv_file')[0]; // Get the file ID.
-  $image_fids = $form_state->getValue('image_files');
+  $csv_fid = $submitted_values['anomalies_file']; // Get the file ID.
+  $image_fids = $submitted_values->['patrol_photos'];
   
-  $csv_file = \Drupal\file\Entity\File::load($csv_fid);
-    if (!$csv_file) {
-      \Drupal::messenger()->addError(t('Failed to load the CSV file.'));
-      return;
+  \Drupal::logger('upload_test')->info('Form data received in hook:
+    CSV File ID: @csv_id
+    Image File IDs: @image_ids', [
+      '@csv_id' => $csv_fid,
+      '@image_ids' => implode(', ', $image_fids),
+  ]);  
+
+
+    if ($csv_fid) {
+        $csv_file = File::load($csv_fid);
+        if (!$csv_file) {
+            \Drupal::messenger()->addError(t('Failed to load the CSV file.'));
+            return;
+        }
+
+        // Process the CSV file (example: read the first line).
+        $csv_uri = $csv_file->getFileUri();
+        $handle = fopen($csv_uri, 'r');
+        $csv_data = [];
+        if ($handle) {
+            $csv_data = fgetcsv($handle); // Get the first line of the CSV.
+            fclose($handle);
+            if ($csv_data) {
+                \Drupal::messenger()->addMessage(t('First line of CSV: @data', ['@data' => implode(', ', $csv_data)]));
+            }
+        }
+        else {
+            \Drupal::messenger()->addError(t('Could not open the csv file.'));
+            return;
+        }
+
+        $header = fgetcsv($handle); // Get the header row.
+        if ($header === FALSE) {
+            \Drupal::messenger()->addError(t('Could not read the CSV header.'));
+            fclose($handle);
+            return;
+        }
     }
 
-    // Process the CSV file (example: read the first line).
-    $csv_uri = $csv_file->getFileUri();
-    $handle = fopen($csv_uri, 'r');
-    $csv_data = [];
-    if ($handle) {
-      $csv_data = fgetcsv($handle); // Get the first line of the CSV.
-      fclose($handle);
-      if ($csv_data) {
-        \Drupal::messenger()->addMessage(t('First line of CSV: @data', ['@data' => implode(', ', $csv_data)]));
-      }
-    }
-    else {
-      \Drupal::messenger()->addError(t('Could not open the csv file.'));
-      return;
-    }
 
-    $header = fgetcsv($handle); // Get the header row.
-    if ($header === FALSE) {
-      \Drupal::messenger()->addError(t('Could not read the CSV header.'));
-      fclose($handle);
-      return;
-    }
-
-    $image_uris = [];
-    $images_data = [];
-    // Load and process the image files.
-    foreach ($image_fids as $image_fid) {
-      $image_file = \Drupal\file\Entity\File::load($image_fid);
-      if ($image_file) {
-        $image_uri = $image_file->getFileUri();
-        $image_uris[] = $image_uri;
-        $images_data[] = [
-          'uri' => $image_uri,
-          'alt' => $image_file->getFilename(), // You might want a separate field for alt text.
-        ];
-      }
-    }
-    if (count($image_uris) > 0) {
-      \Drupal::messenger()->addMessage(t('Uploaded images: @images', ['@images' => implode(', ', $image_uris)]));
+    if (!empty($image_fids)) {
+        $image_uris = [];
+        $images_data = [];
+        // Load and process the image files.
+        foreach ($image_fids as $image_fid) {
+            $image_file = File::load($image_fid);
+            if ($image_file) {
+                $image_uri = $image_file->getFileUri();
+                $image_uris[] = $image_uri;
+                $images_data[] = [
+                'uri' => $image_uri,
+                'alt' => $image_file->getFilename(), // You might want a separate field for alt text.
+                ];
+            }
+        }
+        if (count($image_uris) > 0) {
+            \Drupal::messenger()->addMessage(t('Uploaded images: @images', ['@images' => implode(', ', $image_uris)]));
+        }
     }
 
 
@@ -83,7 +97,7 @@ function upload_test_upload_test_form_submit(array &$form, FormStateInterface $f
     // Set a success message.
     \Drupal::messenger()->addMessage(t('Node created successfully.'));
 
-    $this->loggerFactory->get('my_node_creator')->notice('Node created');
+    $this->loggerFactory->get('upload_test')->notice('Node created');
 
 
     //Please actually work
@@ -130,7 +144,7 @@ function upload_test_upload_test_form_submit(array &$form, FormStateInterface $f
 
     \Drupal::messenger()->addMessage(t('@count nodes created successfully.', ['@count' => $nodes_created]));
 
-    $this->loggerFactory->get('my_node_creator')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
+    $this->loggerFactory->get('upload_test')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
     // Redirect to the node's view page.
     $form_state->setRedirect('entity.node.canonical', ['node' => $node->id()]); 
 }

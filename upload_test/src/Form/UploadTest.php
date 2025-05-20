@@ -10,6 +10,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\file\Entity\File;
 
 /**
  * Implements the SimpleForm form controller.
@@ -46,6 +47,8 @@ class UploadTest extends FormBase {
   }
   
   public function buildForm(array $form, FormStateInterface $form_state) {
+
+    $form['#attributes']['enctype'] = 'multipart/form-data';
 
     $form['anomalies_file'] = [
       '#type' => 'file',
@@ -99,122 +102,43 @@ class UploadTest extends FormBase {
   
   public function submitForm(array &$form, FormStateInterface $form_state) {
     
-    /*
-    $csv_fid = $form_state->getValue('csv_file')[0]; // Get the file ID.
-    $image_fids = $form_state->getValue('image_files');
+    $csv_fid = $form_state->getValue('anomalies_file');
+    $image_fids = $form_state->getValue('patrol_photos');
 
-    // Load the CSV file.
-    $csv_file = \Drupal\file\Entity\File::load($csv_fid);
-    if (!$csv_file) {
-      $this->messenger()->addError($this->t('Failed to load the CSV file.'));
-      return;
-    }
-
-    // Process the CSV file (example: read the first line).
-    $csv_uri = $csv_file->getFileUri();
-    $handle = fopen($csv_uri, 'r');
-    $csv_data = [];
-    if ($handle) {
-      $csv_data = fgetcsv($handle); // Get the first line of the CSV.
-      fclose($handle);
-      if ($csv_data) {
-        $this->messenger()->addMessage($this->t('First line of CSV: @data', ['@data' => implode(', ', $csv_data)]));
+    // Make the uploaded files permanent.
+    // For CSV file:
+    if (!empty($csv_fid)) {
+      $file = File::load(reset($csv_fid)); // Get the first (and only) FID.
+      if ($file) {
+        $file->setPermanent();
+        $file->save();
+        // Update the form state value with the permanent file ID.
+        $form_state->setValue('anomalies_file', $file->id());
+        $this->messenger()->addStatus($this->t('CSV file "@filename" uploaded permanently.', ['@filename' => $file->getFilename()]));
       }
     }
-    else {
-      $this->messenger()->addError($this->t('Could not open the csv file.'));
-      return;
-    }
 
-    $header = fgetcsv($handle); // Get the header row.
-    if ($header === FALSE) {
-      $this->messenger()->addError($this->t('Could not read the CSV header.'));
-      fclose($handle);
-      return;
-    }
-
-    $image_uris = [];
-    $images_data = [];
-    // Load and process the image files.
-    foreach ($image_fids as $image_fid) {
-      $image_file = \Drupal\file\Entity\File::load($image_fid);
-      if ($image_file) {
-        $image_uri = $image_file->getFileUri();
-        $image_uris[] = $image_uri;
-        $images_data[] = [
-          'uri' => $image_uri,
-          'alt' => $image_file->getFilename(), // You might want a separate field for alt text.
-        ];
+    // For image files:
+    $permanent_image_fids = [];
+    if (!empty($image_fids)) {
+      foreach ($image_fids as $fid) {
+        $file = File::load($fid);
+        if ($file) {
+          $file->setPermanent();
+          $file->save();
+          $permanent_image_fids[] = $file->id();
+          $this->messenger()->addStatus($this->t('Image file "@filename" uploaded permanently.', ['@filename' => $file->getFilename()]));
+        }
       }
+      // Update the form state value with the permanent file IDs.
+      $form_state->setValue('patrol_photos', $permanent_image_fids);
     }
-    if (count($image_uris) > 0) {
-      $this->messenger()->addMessage($this->t('Uploaded images: @images', ['@images' => implode(', ', $image_uris)]));
-    }
 
+    // At this point, the files are permanent, and their FIDs are updated in $form_state.
+    // The custom hook will now receive the form state with permanent FIDs.
 
-    $node = Node::create([
-      'type' => 'valkyrie_upload',
-      'field_csv_data' => serialize($csv_data), // Store the CSV data.  Consider creating a dedicated field.
-      'field_image_files' => $images_data, // Store the image file information.  Adjust field name as needed.
-    ]);
-
-
-    $node->save();
-
-    // Set a success message.
-    $this->messenger()->addMessage($this->t('Node created successfully.'));
-
-    $this->loggerFactory->get('my_node_creator')->notice('Node created');
-
-
-    //Please actually work
-    $nodes_created = 0;
-    while (($row = fgetcsv($handle)) !== FALSE) {
-      // Combine header and row data.
-      $data = array_combine($header, $row);
-       if ($data) {
-        // Create a new node for each row.
-        $anomaly_location = $data['lat'].", ".$data['lon'];
-        $anomaly_status = $data['status'];
-        $anomaly_type = $data['type'];
-
-        $anomaly_node = Node::create([
-          'type' => 'anomaly',
-          'field_anomaly_location' => $anomaly_location,
-          'field_qc_status' => $anomaly_status,
-          'field_anomaly_type' => $anomaly_type,
-          
-        ]);
-
-        // Save the node.
-        $anomaly_node->save();
-
-        $anomaly_history_date = $data['anomDate'];
-        $anomaly_history_photos = $data['pics'];
-
-        $anomaly_history_node = Node::create([
-          'type' => 'anomaly_history',
-          'field_anomaly' => $anomaly_node,
-          'field_date' => $anomaly_history_date,
-          'field_patrol_photos' => $anomaly_history_photos,
-          
-        ]);
-
-        // Save the node.
-        $anomaly_history_node->save();
-
-        $nodes_created++;
-       }
-    }
-    fclose($handle);
-
-
-    $this->messenger()->addMessage($this->t('@count nodes created successfully.', ['@count' => $nodes_created]));
-
-    $this->loggerFactory->get('my_node_creator')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
-    // Redirect to the node's view page.
-    $form_state->setRedirect('entity.node.canonical', ['node' => $node->id()]);
-    */
+    $this->messenger()->addStatus($this->t('Form submitted successfully. Processing in custom hook.'));
+    // No redirect here, let the hook handle further actions or redirect.
   }
 
 }
