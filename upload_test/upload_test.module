@@ -25,7 +25,7 @@ function upload_test_upload_test_form_submit(array &$form, FormStateInterface $f
   
   $csv_file = \Drupal\file\Entity\File::load($csv_fid);
     if (!$csv_file) {
-      $this->messenger()->addError($this->t('Failed to load the CSV file.'));
+      \Drupal::messenger()->addError(t('Failed to load the CSV file.'));
       return;
     }
 
@@ -37,17 +37,17 @@ function upload_test_upload_test_form_submit(array &$form, FormStateInterface $f
       $csv_data = fgetcsv($handle); // Get the first line of the CSV.
       fclose($handle);
       if ($csv_data) {
-        $this->messenger()->addMessage($this->t('First line of CSV: @data', ['@data' => implode(', ', $csv_data)]));
+        \Drupal::messenger()->addMessage(t('First line of CSV: @data', ['@data' => implode(', ', $csv_data)]));
       }
     }
     else {
-      $this->messenger()->addError($this->t('Could not open the csv file.'));
+      \Drupal::messenger()->addError(t('Could not open the csv file.'));
       return;
     }
 
     $header = fgetcsv($handle); // Get the header row.
     if ($header === FALSE) {
-      $this->messenger()->addError($this->t('Could not read the CSV header.'));
+      \Drupal::messenger()->addError(t('Could not read the CSV header.'));
       fclose($handle);
       return;
     }
@@ -67,7 +67,7 @@ function upload_test_upload_test_form_submit(array &$form, FormStateInterface $f
       }
     }
     if (count($image_uris) > 0) {
-      $this->messenger()->addMessage($this->t('Uploaded images: @images', ['@images' => implode(', ', $image_uris)]));
+      \Drupal::messenger()->addMessage(t('Uploaded images: @images', ['@images' => implode(', ', $image_uris)]));
     }
 
 
@@ -81,7 +81,7 @@ function upload_test_upload_test_form_submit(array &$form, FormStateInterface $f
     $node->save();
 
     // Set a success message.
-    $this->messenger()->addMessage($this->t('Node created successfully.'));
+    \Drupal::messenger()->addMessage(t('Node created successfully.'));
 
     $this->loggerFactory->get('my_node_creator')->notice('Node created');
 
@@ -128,7 +128,7 @@ function upload_test_upload_test_form_submit(array &$form, FormStateInterface $f
     fclose($handle);
 
 
-    $this->messenger()->addMessage($this->t('@count nodes created successfully.', ['@count' => $nodes_created]));
+    \Drupal::messenger()->addMessage(t('@count nodes created successfully.', ['@count' => $nodes_created]));
 
     $this->loggerFactory->get('my_node_creator')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
     // Redirect to the node's view page.
