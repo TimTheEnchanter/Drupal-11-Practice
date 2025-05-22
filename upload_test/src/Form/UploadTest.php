@@ -107,6 +107,7 @@ class UploadTest extends FormBase {
 
     // Make the uploaded files permanent.
     // For CSV file:
+    //$this->messenger()->addStatus($this->t(print_r($csv_fid, TRUE)));
     if (!empty($csv_fid)) {
       $file = File::load(reset($csv_fid)); // Get the first (and only) FID.
       if ($file) {
