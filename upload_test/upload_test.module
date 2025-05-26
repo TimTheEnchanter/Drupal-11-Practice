@@ -4,37 +4,29 @@ use Drupal\node\Entity\Node;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 
-/*function upload_test_form_alter(array &$form, FormStateInterface $form_state, string $form_id) {
-  
-  if ($form_id == 'upload_test_form') {
-    
-    $form['#submit'][] = 'upload_test_process_form_data_hook';
-  }
-}*/
-
 function upload_test_node_insert(Node $node) {
 
     if ($node->bundle() === 'valkyrie_upload') {
     $submitted_values = $node;
 
     // Do something with the form data.  For example, log it.
-    \Drupal::logger('upload_test')->notice('Form data: @data', [
-        '@data' => print_r($node, TRUE),
-    ]);
+    //\Drupal::logger('upload_test')->notice('Form data: @data', [
+    //    '@data' => print_r($node, TRUE),
+    //]);
 
     
     $csv_fid = '';
-    if ($node->hasField('anomalies_file') && !$node->get('anomalies_file')->isEmpty()) {
-        $csv_fid = $node->get('anomalies_file')->value;
+    //$csv_file_content_summary = '';
+    if ($node->hasField('field_valkyrie_anomalies_file') && !$node->get('field_valkyrie_anomalies_file')->isEmpty()) {
+        $csv_fid = $node->get('field_valkyrie_anomalies_file')->target_id;
     }
 
     $image_fids = '';
-    if ($node->hasField('patrol_photos') && !$node->get('patrol_photos')->isEmpty()) {
-        $image_fids = $node->get('patrol_photos')->value;
+    if ($node->hasField('field_patrol_photos') && !$node->get('field_patrol_photos')->isEmpty()) {
+        $image_fids = $node->get('field_patrol_photos')->target_id;
     }
 
-    //$csv_fid = $submitted_values['anomalies_file'];
-    //$image_fids = $submitted_values['patrol_photos'];
+    //dd($image_fids);
     
     
 
@@ -42,10 +34,10 @@ function upload_test_node_insert(Node $node) {
         CSV File ID: @csv_id
         Image File IDs: @image_ids', [
         '@csv_id' => $csv_fid,
-        '@image_ids' => implode(', ', $image_fids),
+        '@image_ids' => $image_fids,
     ]);  
 
-        dd($csv_fid);
+        //dd($csv_fid);
         if ($csv_fid) {
             $csv_file = File::load($csv_fid);
             if (!$csv_file) {
@@ -69,6 +61,8 @@ function upload_test_node_insert(Node $node) {
                 return;
             }
 
+            $handle = fopen($csv_uri, 'r');
+            //dd($handle);
             $header = fgetcsv($handle); // Get the header row.
             if ($header === FALSE) {
                 \Drupal::messenger()->addError(t('Could not read the CSV header.'));
@@ -126,6 +120,7 @@ function upload_test_node_insert(Node $node) {
             $anomaly_type = $data['type'];
 
             $anomaly_node = Node::create([
+            'title' => 'Test',
             'type' => 'anomaly',
             'field_anomaly_location' => $anomaly_location,
             'field_qc_status' => $anomaly_status,
