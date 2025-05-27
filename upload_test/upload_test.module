@@ -135,6 +135,7 @@ function upload_test_node_insert(Node $node) {
             $anomaly_history_photos = $data['pics'];
 
             $anomaly_history_node = Node::create([
+            'title' => 'Sub Test',
             'type' => 'anomaly_history',
             'field_anomaly' => $anomaly_node,
             'field_date' => $anomaly_history_date,
@@ -153,7 +154,7 @@ function upload_test_node_insert(Node $node) {
 
         \Drupal::messenger()->addMessage(t('@count nodes created successfully.', ['@count' => $nodes_created]));
 
-        $this->loggerFactory->get('upload_test')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
+        \Drupal::logger('upload_test')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
         // Redirect to the node's view page.
         $form_state->setRedirect('entity.node.canonical', ['node' => $node->id()]); 
     }
