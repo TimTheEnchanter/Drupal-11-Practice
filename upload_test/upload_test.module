@@ -156,6 +156,9 @@ function upload_test_node_insert(Node $node) {
 
         \Drupal::logger('upload_test')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
         // Redirect to the node's view page.
-        $form_state->setRedirect('entity.node.canonical', ['node' => $node->id()]); 
+        //$form_state->setRedirect('entity.node.canonical', ['node' => $node->id()]); 
+        $url = Url::fromUri('https://airs4james.synergyaviation.ca/node/add/valkyrie_upload');
+
+        return new RedirectResponse($url->toString());
     }
 }
