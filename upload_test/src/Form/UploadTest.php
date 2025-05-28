@@ -140,6 +140,7 @@ class UploadTest extends FormBase {
 
     $this->messenger()->addStatus($this->t('Form submitted successfully. Processing in custom hook.'));
     // No redirect here, let the hook handle further actions or redirect.
+    $form_state->setRedirectUrl(Url::fromUri('https://airs4james.synergyaviation.ca/node/add/valkyrie_upload'));
   }
 
 }
