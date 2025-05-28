@@ -100,7 +100,7 @@ function upload_test_node_insert(Node $node) {
                 $anomaly_type = $data['type'];
 
                 $anomaly_node = Node::create([
-                'title' => 'Test',
+                'title' => $data['_id'],
                 'type' => 'anomaly',
                 'field_anomaly_location' => $anomaly_location,
                 'field_qc_status' => $anomaly_status,
@@ -115,7 +115,7 @@ function upload_test_node_insert(Node $node) {
                 $anomaly_history_photos = $data['pics'];
 
                 $anomaly_history_node = Node::create([
-                'title' => 'Sub Test',
+                'title' => $data['_id'].' Anomaly History',
                 'type' => 'anomaly_history',
                 'field_anomaly' => $anomaly_node,
                 'field_date' => $anomaly_history_date,
