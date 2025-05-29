@@ -136,6 +136,95 @@ function upload_test_create_content_types() {
       $valkyrie_upload->save();
 
       \Drupal::messenger()->addMessage(t('Content type %type created.', ['%type' => $valkyrie_upload->label()]));
+
+      $csv_field_name = 'field_valkyrie_anomalies_file';
+      if (!FieldStorageConfig::loadByName('node', $csv_field_name)) {
+        $field_storage = FieldStorageConfig::create([
+          'field_name' => $csv_field_name,
+          'entity_type' => 'node',
+          'type' => 'file', // Use 'file' type for CSV.
+          'settings' => [
+            'target_type' => 'file',
+            'display_field' => FALSE, // Don't display the file name/link by default.
+            'display_default' => FALSE,
+            'uri_scheme' => 'public', // Or 'private' if you prefer private files.
+            'file_extensions' => 'csv', // Only allow CSV files.
+          ],
+          'cardinality' => 1, // Single CSV file.
+        ]);
+        $field_storage->save();
+
+        $field = FieldConfig::create([
+          'field_storage' => $field_storage,
+          'bundle' => $content_type_id,
+          'label' => t('CSV Data File'),
+          'description' => t('Upload the CSV file containing the data.'),
+          'required' => TRUE,
+          'form_display_options' => [
+            'type' => 'file_generic', // Standard widget for file uploads.
+            'weight' => 0,
+          ],
+          'display_options' => [
+            'label' => 'above',
+            'type' => 'file_default', // Default formatter for files.
+            'weight' => 0,
+          ],
+        ]);
+        $field->save();
+        \Drupal::messenger()->addStatus(t('Field @field_name created for @content_type.', ['@field_name' => $csv_field_name, '@content_type' => $content_type_name]));
+      } else {
+        \Drupal::messenger()->addWarning(t('Field @field_name already exists. Skipping creation.', ['@field_name' => $csv_field_name]));
+      }
+
+      $images_field_name = 'field_patrol_photos';
+      if (!FieldStorageConfig::loadByName('node', $images_field_name)) {
+        $field_storage = FieldStorageConfig::create([
+          'field_name' => $images_field_name,
+          'entity_type' => 'node',
+          'type' => 'image', // Use 'image' type for image-specific features.
+          'settings' => [
+            'target_type' => 'file',
+            'display_field' => FALSE,
+            'display_default' => FALSE,
+            'uri_scheme' => 'public', // Or 'private'.
+            'file_extensions' => 'png jpg jpeg gif', // Allowed image extensions.
+            'alt_field' => TRUE, // Allow alt text for images.
+            'alt_field_required' => FALSE,
+            'title_field' => FALSE, // Optional: allow title text.
+            'title_field_required' => FALSE,
+            // 'max_resolution' => '1024x768', // Optional: Max resolution.
+            // 'min_resolution' => '100x100', // Optional: Min resolution.
+            // 'max_filesize' => '2MB', // Optional: Max file size.
+          ],
+          'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED, // Allow multiple images.
+        ]);
+        $field_storage->save();
+
+        $field = FieldConfig::create([
+          'field_storage' => $field_storage,
+          'bundle' => $content_type_id,
+          'label' => t('Associated Images'),
+          'description' => t('Upload one or more images related to the data.'),
+          'required' => FALSE, // Images can be optional.
+          'form_display_options' => [
+            'type' => 'image_image', // Standard widget for image uploads.
+            'weight' => 1,
+          ],
+          'display_options' => [
+            'label' => 'above',
+            'type' => 'image', // Default formatter for images.
+            'settings' => [
+              'image_style' => 'medium', // Use a defined image style.
+              'image_link' => '', // Link to file, content, or nothing.
+            ],
+            'weight' => 1,
+          ],
+        ]);
+        $field->save();
+        \Drupal::messenger()->addStatus(t('Field @field_name created for @content_type.', ['@field_name' => $images_field_name, '@content_type' => $content_type_name]));
+      } else {
+        \Drupal::messenger()->addWarning(t('Field @field_name already exists. Skipping creation.', ['@field_name' => $images_field_name]));
+      }
   }
  
   // You can add more content type creation logic here.
