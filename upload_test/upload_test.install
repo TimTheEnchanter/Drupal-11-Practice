@@ -122,10 +122,18 @@ function upload_test_create_content_types() {
   }
   
 
+
+
+
+
+
   if (NodeType::load('valkyrie_upload')) {
 
   }
   else{
+
+      $content_type_id = 'valkyrie_upload';
+
       $valkyrie_upload = NodeType::create([
         'type' => 'valkyrie_upload',
         'name' => 'Valkyrie Upload',
