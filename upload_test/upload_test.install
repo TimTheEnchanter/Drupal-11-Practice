@@ -109,6 +109,9 @@ function upload_test_create_content_types() {
 
   }
   else{
+
+      $content_type_id = 'anomaly_history';
+
       $anomaly_history = NodeType::create([
         'type' => 'anomaly_history',
         'name' => 'Anomaly History',
@@ -119,6 +122,208 @@ function upload_test_create_content_types() {
       $anomaly_history->save();
 
       \Drupal::messenger()->addMessage(t('Content type %type created.', ['%type' => $anomaly_history->label()]));
+
+      $entity_ref_field_name = 'field_anomaly';
+      // You'll need to know the target entity type (e.g., 'taxonomy_term')
+      // and the target bundle (e.g., 'tags' vocabulary machine name).
+      $target_entity_type = 'Content';
+      $target_bundle = 'Anomaly'; // Replace with the machine name of your target vocabulary or content type.
+
+      if (!FieldStorageConfig::loadByName('node', $entity_ref_field_name)) {
+        $field_storage = FieldStorageConfig::create([
+          'field_name' => $entity_ref_field_name,
+          'entity_type' => 'node',
+          'type' => 'entity_reference', // Use 'entity_reference' for entity reference fields.
+          'settings' => [
+            'target_type' => $target_entity_type, // e.g., 'user', 'taxonomy_term', 'node', 'media'
+          ],
+          'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED, // Can reference multiple categories.
+        ]);
+        $field_storage->save();
+
+        $field = FieldConfig::create([
+          'field_storage' => $field_storage,
+          'bundle' => $content_type_id,
+          'label' => t('Anomaly'),
+          //'description' => t('Reference to a taxonomy term for categorization.'),
+          'required' => FALSE,
+          'settings' => [
+            'handler' => 'default:taxonomy_term', // Handler for taxonomy terms.
+            'handler_settings' => [
+              'target_bundles' => [$target_bundle => $target_bundle], // Limit to specific vocabulary.
+              'auto_create' => FALSE, // Set to TRUE to allow users to create new terms.
+            ],
+          ],
+          'form_display_options' => [
+            'type' => 'entity_reference_autocomplete', // Autocomplete widget.
+            'weight' => 4,
+          ],
+          'display_options' => [
+            'label' => 'above',
+            'type' => 'entity_reference_label', // Displays the label of the referenced entity.
+            'weight' => 4,
+          ],
+        ]);
+        $field->save();
+        \Drupal::messenger()->addStatus(t('Field @field_name created for @content_type.', ['@field_name' => $entity_ref_field_name, '@content_type' => $content_type_name]));
+      } else {
+        \Drupal::messenger()->addWarning(t('Field @field_name already exists. Skipping creation.', ['@field_name' => $entity_ref_field_name]));
+      }
+
+
+
+
+
+
+      $field_storage = FieldStorageConfig::create([
+        'field_name' => 'body',
+        'entity_type' => 'node',
+        'type' => 'text',
+        
+      ]);
+      $field_storage->save();
+
+      $field = FieldConfig::create([
+        'field_storage' => $field_storage,
+        'bundle' => 'anomaly_history',
+        'label' => 'Body',
+        'settings' => [
+          'display_summary' => FALSE,
+        ],
+        'form_display_options' => [
+          'type' => 'text_textfield',
+          'weight' => 0,
+        ],
+        'display_options' => [
+          'label' => 'above',
+          'type' => 'string',
+          'weight' => 0,
+        ],
+      ]);
+      $field->save();
+
+
+      $field_storage = FieldStorageConfig::create([
+        'field_name' => 'field_date',
+        'entity_type' => 'node',
+        'type' => 'datetime', // Use 'datetime' type for date and time.
+        'settings' => [
+          'datetime_type' => 'date', // 'date' for date only, 'datetime' for date and time.
+        ],
+        'cardinality' => 1, // Single date.
+      ]);
+      $field_storage->save();
+
+      $field = FieldConfig::create([
+        'field_storage' => $field_storage,
+        'bundle' => 'anomaly_history',
+        'label' => 'Date',
+        'form_display_options' => [
+          'type' => 'datetime_default', // Standard widget for date/time.
+          'weight' => 2,
+        ],
+        'display_options' => [
+          'label' => 'above',
+          'type' => 'datetime_default', // Default formatter for date/time.
+          'settings' => [
+            'format_type' => 'medium', // Use a defined date format.
+          ],
+          'weight' => 2,
+        ],
+      ]);
+      $field->save();
+
+
+      $images_field_name = 'field_patrol_photos';
+      if (!FieldStorageConfig::loadByName('node', $images_field_name)) {
+        $field_storage = FieldStorageConfig::create([
+          'field_name' => $images_field_name,
+          'entity_type' => 'node',
+          'type' => 'image', // Use 'image' type for image-specific features.
+          'settings' => [
+            'target_type' => 'file',
+            'display_field' => FALSE,
+            'display_default' => FALSE,
+            'uri_scheme' => 'public', // Or 'private'.
+            'file_extensions' => 'png jpg jpeg gif', // Allowed image extensions.
+            'alt_field' => TRUE, // Allow alt text for images.
+            'alt_field_required' => FALSE,
+            'title_field' => FALSE, // Optional: allow title text.
+            'title_field_required' => FALSE,
+          ],
+          'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED, // Allow multiple images.
+        ]);
+        $field_storage->save();
+
+        $field = FieldConfig::create([
+          'field_storage' => $field_storage,
+          'bundle' => $content_type_id,
+          'label' => t('Associated Images'),
+          'description' => t('Upload one or more images related to the data.'),
+          'required' => FALSE, // Images can be optional.
+          'form_display_options' => [
+            'type' => 'image_image', // Standard widget for image uploads.
+            'weight' => 1,
+          ],
+          'display_options' => [
+            'label' => 'above',
+            'type' => 'image', // Default formatter for images.
+            'settings' => [
+              'image_style' => 'medium', // Use a defined image style.
+              'image_link' => '', // Link to file, content, or nothing.
+            ],
+            'weight' => 1,
+          ],
+        ]);
+        $field->save();
+        \Drupal::messenger()->addStatus(t('Field @field_name created for @content_type.', ['@field_name' => $images_field_name, '@content_type' => $content_type_name]));
+      } else {
+        \Drupal::messenger()->addWarning(t('Field @field_name already exists. Skipping creation.', ['@field_name' => $images_field_name]));
+      }
+
+
+      $list_field_name = 'field_qc_status';
+      if (!FieldStorageConfig::loadByName('node', $list_field_name)) {
+        $field_storage = FieldStorageConfig::create([
+          'field_name' => $list_field_name,
+          'entity_type' => 'node',
+          'type' => 'list_string', // Use 'list_string' for List (text).
+          'settings' => [
+            'allowed_values' => [
+              'invoice_sent' => 'Invoice Sent',
+              'invoice_awaiting_approval' => 'Invoice Awaiting Approval',
+              'needs_review' => 'Needs Review',
+              'passed_qc' => 'Passed QC',
+              'ready_for_invoicing' => 'Ready For Invoicing',
+              'ready_for_qc' => 'Ready For QC',
+              'requires_correction' => 'Requires Correction',
+            ],
+          ],
+          'cardinality' => 1, // Single selection from the list. Use FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED for multiple.
+        ]);
+        $field_storage->save();
+
+        $field = FieldConfig::create([
+          'field_storage' => $field_storage,
+          'bundle' => $content_type_id,
+          'label' => t('QC Status'),
+          'description' => t('The current status of the item.'),
+          'required' => TRUE,
+          'form_display_options' => [
+            'type' => 'options_select', // Widget for a single select list. Use 'options_buttons' for radio buttons.
+            'weight' => 3,
+          ],
+          'display_options' => [
+            'label' => 'above',
+            'type' => 'list_default', // Default formatter for list fields.
+            'weight' => 3,
+          ],
+        ]);
+        $field->save();
+        \Drupal::messenger()->addStatus(t('Field @field_name created for @content_type.', ['@field_name' => $list_field_name, '@content_type' => $content_type_name]));
+      } else {
+        \Drupal::messenger()->addWarning(t('Field @field_name already exists. Skipping creation.', ['@field_name' => $list_field_name]));
+      }
   }
   
 
