@@ -62,6 +62,40 @@ function upload_test_create_content_types() {
       ////////
 
 
+      $geofield_name = 'field_anomaly_location';
+      if (!FieldStorageConfig::loadByName('node', $geofield_name)) {
+        $field_storage = FieldStorageConfig::create([
+          'field_name' => $geofield_name,
+          'entity_type' => 'node',
+          'type' => 'geofield', // Use 'geofield' for Geofields.
+          'settings' => [
+            'backend' => 'geofield_backend_default', // Default backend for geofield.
+          ],
+          'cardinality' => 1, // Single geofield value.
+        ]);
+        $field_storage->save();
+
+        $field = FieldConfig::create([
+          'field_storage' => $field_storage,
+          'bundle' => $content_type_id,
+          'label' => t('Anomaly Location'),
+          //'description' => t('Geographical coordinates for the item.'),
+          'required' => FALSE,
+          'form_display_options' => [
+            'type' => 'geofield_latlon', // Widget for latitude/longitude input.
+            'weight' => 6,
+          ],
+          'display_options' => [
+            'label' => 'above',
+            'type' => 'geofield_default', // Default formatter for geofield.
+            'weight' => 6,
+          ],
+        ]);
+        $field->save();
+        \Drupal::messenger()->addStatus(t('Field @field_name created for @content_type.', ['@field_name' => $geofield_name, '@content_type' => $content_type_name]));
+      } else {
+        \Drupal::messenger()->addWarning(t('Field @field_name already exists. Skipping creation.', ['@field_name' => $geofield_name]));
+      }
 
 
       ///////
