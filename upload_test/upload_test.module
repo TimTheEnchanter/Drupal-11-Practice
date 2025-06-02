@@ -98,14 +98,16 @@ function upload_test_node_insert(Node $node) {
                 $anomaly_location = $data['lat'].", ".$data['lon'];
                 $anomaly_status = $data['status'];
                 $anomaly_type = $data['type'];
+                $anomaly_notes = $data['notes'];
 
                 $anomaly_node = Node::create([
-                'title' => $data['_id'],
+                'title' => $data['anomID'],
                 'type' => 'anomaly',
                 'field_anomaly_location' => $anomaly_location,
-                'field_qc_status' => $anomaly_status,
-                'field_anomaly_type' => $anomaly_type,
-                
+                'field_status' => $anomaly_status,
+                'field_type' => $anomaly_type,
+                'field_notes' => $anomaly_notes,
+
                 ]);
 
                 // Save the node.
@@ -115,7 +117,7 @@ function upload_test_node_insert(Node $node) {
                 $anomaly_history_photos = $data['pics'];
 
                 $anomaly_history_node = Node::create([
-                'title' => $data['_id'].' Anomaly History',
+                'title' => $data['anomID'].' Anomaly History',
                 'type' => 'anomaly_history',
                 'field_anomaly' => $anomaly_node,
                 'field_date' => $anomaly_history_date,
