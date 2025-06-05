@@ -5,6 +5,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 function upload_test_node_insert(Node $node) {
 
@@ -95,38 +98,69 @@ function upload_test_node_insert(Node $node) {
             $data = array_combine($header, $row);
             if ($data) {
                 // Create a new node for each row.
-                $anomaly_location = $data['lat'].", ".$data['lon'];
-                $anomaly_status = $data['status'];
-                $anomaly_type = $data['type'];
-                $anomaly_notes = $data['notes'];
 
-                $anomaly_node = Node::create([
-                //'title' => $data['anomID'],
-                'type' => 'anomaly',
-                'field_anomaly_location' => $anomaly_location,
-                'field_status' => $anomaly_status,
-                'field_type' => $anomaly_type,
-                'field_notes' => $anomaly_notes,
+                if($data['anomID'] != "new")
+                {
+                    $query = $this->entityTypeManager->getStorage('node')->getQuery();
 
-                ]);
+                    $query->condition('field_anomid', $data['anomID']);
+                    $query->range(0, 1);
 
-                // Save the node.
-                $anomaly_node->save();
+                    $results = $query->execute();
 
-                $anomaly_history_date = $data['anomDate'];
-                $anomaly_history_photos = $data['pics'];
+                    if (!empty($results)) {
 
-                $anomaly_history_node = Node::create([
-                //'title' => $data['anomID'].' Anomaly History',
-                'type' => 'anomaly_history',
-                'field_anomaly' => $anomaly_node,
-                'field_date' => $anomaly_history_date,
-                'field_patrol_photos' => $anomaly_history_photos,
-                
-                ]);
+                        $anomaly_history_date = $data['anomDate'];
+                        $anomaly_history_photos = $data['pics'];
 
-                // Save the node.
-                $anomaly_history_node->save();
+                        $anomaly_history_node = Node::create([
+                        //'title' => $data['anomID'].' Anomaly History',
+                        'type' => 'anomaly_history',
+                        'field_anomaly' => $anomaly_node,
+                        'field_date' => $anomaly_history_date,
+                        'field_patrol_photos' => $anomaly_history_photos,
+                        
+                        ]);
+
+                        // Save the node.
+                        $anomaly_history_node->save();     
+
+                    }
+                }
+                else{
+                    $anomaly_location = $data['lat'].", ".$data['lon'];
+                    $anomaly_status = $data['status'];
+                    $anomaly_type = $data['type'];
+                    $anomaly_notes = $data['notes'];
+
+                    $anomaly_node = Node::create([
+                    //'title' => $data['anomID'],
+                    'type' => 'anomaly',
+                    'field_anomaly_location' => $anomaly_location,
+                    'field_status' => $anomaly_status,
+                    'field_type' => $anomaly_type,
+                    'field_notes' => $anomaly_notes,
+                    'field_anomid' => $data['anomID'],
+                    ]);
+
+                    // Save the node.
+                    $anomaly_node->save();
+
+                    $anomaly_history_date = $data['anomDate'];
+                    $anomaly_history_photos = $data['pics'];
+
+                    $anomaly_history_node = Node::create([
+                    //'title' => $data['anomID'].' Anomaly History',
+                    'type' => 'anomaly_history',
+                    'field_anomaly' => $anomaly_node,
+                    'field_date' => $anomaly_history_date,
+                    'field_patrol_photos' => $anomaly_history_photos,
+                    
+                    ]);
+
+                    // Save the node.
+                    $anomaly_history_node->save();
+                }
 
                 $nodes_created++;
             }
