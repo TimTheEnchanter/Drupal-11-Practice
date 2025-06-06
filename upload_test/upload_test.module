@@ -110,13 +110,15 @@ function upload_test_node_insert(Node $node) {
 
                     if (!empty($results)) {
 
+                        $found_nid = reset($results);
+
                         $anomaly_history_date = $data['anomDate'];
                         $anomaly_history_photos = $data['pics'];
 
                         $anomaly_history_node = Node::create([
                         //'title' => $data['anomID'].' Anomaly History',
                         'type' => 'anomaly_history',
-                        'field_anomaly' => $anomaly_node,
+                        'field_anomaly' => $found_nid,
                         'field_date' => $anomaly_history_date,
                         'field_patrol_photos' => $anomaly_history_photos,
                         
