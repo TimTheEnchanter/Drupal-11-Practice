@@ -102,9 +102,10 @@ function upload_test_node_insert(Node $node) {
                 if($data['anomID'] != "new")
                 {
                     $query = $this->entityTypeManager->getStorage('node')->getQuery();
+                    $query = \Drupal::entityQuery('node')->condition('title', $data['anomID'])->execute();
 
-                    $query->condition('field_anomid', $data['anomID']);
-                    $query->range(0, 1);
+                    //$query->condition('field_anomid', $data['anomID']);
+                    //$query->range(0, 1);
 
                     $results = $query->execute();
 
@@ -137,6 +138,8 @@ function upload_test_node_insert(Node $node) {
                     $lat = $data['lat'];
                     $long = $data['lon'];
 
+                    //$image_fids
+
                     $anomaly_node = Node::create([
                     'type' => 'anomaly',
                     'field_anomaly_location' => 'POINT ('.$lat.' '.$long.')',
@@ -157,7 +160,7 @@ function upload_test_node_insert(Node $node) {
                     'type' => 'anomaly_history',
                     'field_anomaly' => $anomaly_node,
                     'field_date' => $anomaly_history_date,
-                    'field_patrol_photos' => $anomaly_history_photos,
+                    'field_patrol_photos' => $image_fids,
                     
                     ]);
 
