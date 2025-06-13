@@ -102,7 +102,7 @@ function upload_test_node_insert(Node $node) {
                 if($data['anomID'] != "new")
                 {
                     //$query = $this->entityTypeManager->getStorage('node')->getQuery();
-                    $query = \Drupal::entityQuery('node')->condition('title', $data['anomID'])->execute();
+                    $query = \Drupal::entityQuery('node')->accessCheck(FALSE)->condition('title', $data['anomID'])->execute();
 
                     //$query->condition('field_anomid', $data['anomID']);
                     //$query->range(0, 1);
