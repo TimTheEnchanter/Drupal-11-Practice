@@ -1,10 +1,12 @@
 <?php
 
 use Drupal\node\Entity\Node;
+use Drupal\Core\Database\Database;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -99,19 +101,15 @@ function upload_test_node_insert(Node $node) {
             if ($data) {
                 // Create a new node for each row.
 
-                if($data['anomID'] != "new")
+                if($data['anomID'] == "new")
                 {
-                    //$query = $this->entityTypeManager->getStorage('node')->getQuery();
+                    
                     $query = \Drupal::entityQuery('node')->accessCheck(FALSE)->condition('title', $data['anomID'])->execute();
 
-                    //$query->condition('field_anomid', $data['anomID']);
-                    //$query->range(0, 1);
 
-                    $results = $query->execute();
+                    if (!empty($query)) {
 
-                    if (!empty($results)) {
-
-                        $found_nid = reset($results);
+                        $found_nid = reset($query);
 
                         $anomaly_history_date = $data['anomDate'];
                         $anomaly_history_photos = $data['pics'];
@@ -127,7 +125,7 @@ function upload_test_node_insert(Node $node) {
 
                         // Save the node.
                         $anomaly_history_node->save();     
-
+                        $nodes_created++;
                     }
                 }
                 else{
@@ -152,6 +150,7 @@ function upload_test_node_insert(Node $node) {
 
                     // Save the node.
                     $anomaly_node->save();
+                    $nodes_created++;
 
                     $anomaly_history_date = $data['anomDate'];
                     $anomaly_history_photos = $data['pics'];
@@ -166,9 +165,10 @@ function upload_test_node_insert(Node $node) {
 
                     // Save the node.
                     $anomaly_history_node->save();
+                    $nodes_created++;
                 }
 
-                $nodes_created++;
+                
             }
         }
         fclose($handle);
