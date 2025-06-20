@@ -24,8 +24,9 @@ function upload_test_node_insert(Node $node) {
     }
 
     $image_fids = '';
-    if ($node->hasField('field_patrol_photos') && !$node->get('field_patrol_photos')->isEmpty()) {
-        $image_fids = $node->get('field_patrol_photos')->target_id;
+    if ($node->hasField('field_patrol_photographs') && !$node->get('field_patrol_photographs')->isEmpty()) {
+        $image_fids = $node->get('field_patrol_photographs')->target_id;
+        dd($node->get('field_patrol_photographs'));
     }
 
     
