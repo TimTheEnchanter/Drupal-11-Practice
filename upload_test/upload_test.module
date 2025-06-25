@@ -8,6 +8,7 @@ use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Field\EntityReferenceFieldItemList;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -23,10 +24,44 @@ function upload_test_node_insert(Node $node) {
         $csv_fid = $node->get('field_valkyrie_anomalies_file')->target_id;
     }
 
-    $image_fids = '';
+    $image_fids = [];
     if ($node->hasField('field_patrol_photographs') && !$node->get('field_patrol_photographs')->isEmpty()) {
-        $image_fids = $node->get('field_patrol_photographs')->target_id;
-        dd($node->get('field_patrol_photographs'));
+
+        $entityReferenceField = $node->get('field_patrol_photographs');
+
+        foreach ($entityReferenceField as $item) {
+            $media_entity = $item->entity;
+            $file_item = $media_entity->get('field_media_image')->first();
+
+            if ($file_item) {
+                
+                $file_entity = $file_item->entity; // Get the referenced File entity
+
+                if ($file_entity) {
+                  $file_id = $file_entity->id();
+                  $filename = $file_entity->getFilename();
+
+                  $extracted_part = '';
+                  $last_zero_pos = strrpos($full_filename, '0'); // Find the last '0'
+                  $dot_pos = strrpos($full_filename, '.'); // Find the last '.' (for the extension)
+
+                  // Ensure both characters are found and '0' is before '.'
+                  if ($last_zero_pos !== false && $dot_pos !== false && $last_zero_pos < $dot_pos) {
+                    // Extract the substring between the last '0' and the '.'
+                    $extracted_part = substr($full_filename, $last_zero_pos + 1, $dot_pos - ($last_zero_pos + 1));
+                  }
+
+                  $image_fids[] = [
+                    'id' => $file_id,
+                    'filename' => $extracted_part,
+                  ];
+                }
+            }
+            
+        }
+      
+        
+
     }
 
     
@@ -72,7 +107,7 @@ function upload_test_node_insert(Node $node) {
         }
 
 
-        if (!empty($image_fids)) {
+        /*if (!empty($image_fids)) {
             $image_uris = [];
             $images_data = [];
             // Load and process the image files.
@@ -90,7 +125,7 @@ function upload_test_node_insert(Node $node) {
             if (count($image_uris) > 0) {
                 \Drupal::messenger()->addMessage(t('Uploaded images: @images', ['@images' => implode(', ', $image_uris)]));
             }
-        }
+        }*/
 
 
 
@@ -100,6 +135,26 @@ function upload_test_node_insert(Node $node) {
         // Combine header and row data.
             $data = array_combine($header, $row);
             if ($data) {
+
+                $csv_photo_array = $data['pics'];
+                $cleaned_csv_photo_array = [];
+                $cleaned_csv_direction_array = [];
+
+                foreach ($csv_photo_array as $item) {
+                    $cleaned_item = preg_replace('/[^0-9]/', '', $item); // Keep only digits
+                    $cleaned_csv_direction_array[] = preg_replace('/[a-zA-Z]/', '', $item);
+                    $cleaned_csv_photo_array[] = (int) $cleaned_item;
+                }
+
+                $media_id_matches = [];
+
+                foreach ($image_fids as $image_id) {
+                    if (in_array($image_id['filename'], $cleaned_csv_photo_array)) {
+                        $media_id_matches[] = $image_id['id'];
+                    }
+                }
+
+
                 // Create a new node for each row.
 
                 if($data['anomID'] == "new")
@@ -120,7 +175,7 @@ function upload_test_node_insert(Node $node) {
                         'type' => 'anomaly_history',
                         'field_anomaly' => $found_nid,
                         'field_date' => $anomaly_history_date,
-                        'field_patrol_photos' => $anomaly_history_photos,
+                        'field_patrol_photos' => $media_id_matches,
                         
                         ]);
 
@@ -160,7 +215,7 @@ function upload_test_node_insert(Node $node) {
                     'type' => 'anomaly_history',
                     'field_anomaly' => $anomaly_node,
                     'field_date' => $anomaly_history_date,
-                    'field_patrol_photos' => $image_fids,
+                    'field_patrol_photos' => $media_id_matches,
                     
                     ]);
 
