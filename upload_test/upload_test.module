@@ -200,6 +200,7 @@ function upload_test_node_insert(Node $node) {
                     'field_anomaly_position' => 'on_site',
                     'field_anomaly_status' => 'active',
                     'field_anomaly_type' => '',
+                    'field_directions' => $cleaned_csv_direction_array,
                     'field_anomaly_location' => $anomaly_location,
                     'field_notes' => $anomaly_notes,
                     ]);
