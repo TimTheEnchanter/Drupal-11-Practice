@@ -141,15 +141,16 @@ function upload_test_node_insert(Node $node) {
                 $cleaned_csv_photo_array = [];
                 $cleaned_csv_direction_array = [];
 
-                dump($csv_photo_array);
 
                 $cleaned_string1 = trim($csv_photo_array, '[]'); // Removes leading/trailing [ and ]
                 // Result: "1w","2w"
                 $cleaned_string1 = str_replace('"', '', $cleaned_string1); // Removes all double quotes
                 // Result: 1w,2w
-                $photo_array['string1_split'] = explode(',', $cleaned_string1);
+                $photo_array[] = array_merge($photo_array,explode(',', $cleaned_string1));
 
-                foreach ($csv_photo_array as $item) {
+                dump($photo_array);
+
+                foreach ($photo_array as $item) {
                     dump("Test1 ".$item);
                     $cleaned_item = preg_replace('/[^0-9]/', '', $item); // Keep only digits
                     dump("Test2 ".$cleaned_item);
@@ -160,7 +161,7 @@ function upload_test_node_insert(Node $node) {
                 $media_id_matches = [];
 
                 //dump($image_fids);
-                //print_r($cleaned_csv_photo_array);
+                dump($cleaned_csv_photo_array);
 
                 foreach ($image_fids as $image_id) {
                     if (in_array($image_id['filename'], $cleaned_csv_photo_array)) {
