@@ -137,6 +137,7 @@ function upload_test_node_insert(Node $node) {
             if ($data) {
 
                 $photo_array = [];
+                //$cleaned_array = [];
                 $csv_photo_array = $data['pics'];
                 $cleaned_csv_photo_array = [];
                 $cleaned_csv_direction_array = [];
@@ -146,14 +147,24 @@ function upload_test_node_insert(Node $node) {
                 // Result: "1w","2w"
                 $cleaned_string1 = str_replace('"', '', $cleaned_string1); // Removes all double quotes
                 // Result: 1w,2w
-                $photo_array[] = array_merge($photo_array,explode(',', $cleaned_string1));
+                $cleaned_array = explode(',', $cleaned_string1);
+                //dump($cleaned_array);
 
-                dump($photo_array);
+                foreach($cleaned_array as $clean)
+                {
+                    //dump($clean);
+                    $photo_array[] = $clean;
+                }
+
+                 
+
+                //dump($photo_array);
 
                 foreach ($photo_array as $item) {
-                    dump("Test1 ".$item);
+                    //dump("Test1 ".$item);
                     $cleaned_item = preg_replace('/[^0-9]/', '', $item); // Keep only digits
-                    dump("Test2 ".$cleaned_item);
+                    //dump("Test2 ".$cleaned_item);
+                    //print_r($cleaned_item,TRUE);
                     $cleaned_csv_direction_array[] = preg_replace('/[a-zA-Z]/', '', $item);
                     $cleaned_csv_photo_array[] = (int)$cleaned_item;
                 }
@@ -246,7 +257,7 @@ function upload_test_node_insert(Node $node) {
         }
         fclose($handle);
 
-        dd();
+        //dd();
         \Drupal::messenger()->addMessage(t('@count nodes created successfully.', ['@count' => $nodes_created]));
 
         \Drupal::logger('upload_test')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
