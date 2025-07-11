@@ -42,14 +42,22 @@ function upload_test_node_insert(Node $node) {
                   $filename = $file_entity->getFilename();
 
                   $extracted_part = '';
-                  $last_zero_pos = strrpos($full_filename, '0'); // Find the last '0'
-                  $dot_pos = strrpos($full_filename, '.'); // Find the last '.' (for the extension)
 
-                  // Ensure both characters are found and '0' is before '.'
-                  if ($last_zero_pos !== false && $dot_pos !== false && $last_zero_pos < $dot_pos) {
-                    // Extract the substring between the last '0' and the '.'
-                    $extracted_part = substr($full_filename, $last_zero_pos + 1, $dot_pos - ($last_zero_pos + 1));
+                  if($full_filename)
+                  {
+                    $last_zero_pos = strrpos($full_filename, '0'); // Find the last '0'
+                    $dot_pos = strrpos($full_filename, '.'); // Find the last '.' (for the extension)
+
+                    // Ensure both characters are found and '0' is before '.'
+                    if ($last_zero_pos !== false && $dot_pos !== false && $last_zero_pos < $dot_pos) {
+                        // Extract the substring between the last '0' and the '.'
+                        $extracted_part = substr($full_filename, $last_zero_pos + 1, $dot_pos - ($last_zero_pos + 1));
+                    }
                   }
+                  else{
+                    $extracted_part = "";
+                  }
+                  
 
                   $image_fids[] = [
                     'id' => $file_id,
