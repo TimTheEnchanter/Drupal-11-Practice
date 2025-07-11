@@ -39,7 +39,7 @@ function upload_test_node_insert(Node $node) {
 
                 if ($file_entity) {
                   $file_id = $file_entity->id();
-                  $filename = $file_entity->getFilename();
+                  $full_filename = $file_entity->getFilename();
 
                   $extracted_part = '';
 
@@ -180,7 +180,7 @@ function upload_test_node_insert(Node $node) {
                 $media_id_matches = [];
 
                 //dump($image_fids);
-                dump($cleaned_csv_photo_array);
+                //dump($cleaned_csv_photo_array);
 
                 foreach ($image_fids as $image_id) {
                     if (in_array($image_id['filename'], $cleaned_csv_photo_array)) {
