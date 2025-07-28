@@ -45,7 +45,10 @@ function upload_test_node_insert(Node $node) {
 
                   if($full_filename)
                   {
-                    $last_zero_pos = strrpos($full_filename, '0'); // Find the last '0'
+                    //$last_zero_pos = strrpos($full_filename, '0'); // Find the last '0'
+                    preg_match('/[1-9]/', $full_filename, $matches, PREG_OFFSET_CAPTURE);
+                    $last_zero_pos = $matches[0][1];
+
                     $dot_pos = strrpos($full_filename, '.'); // Find the last '.' (for the extension)
 
                     // Ensure both characters are found and '0' is before '.'
@@ -202,6 +205,30 @@ function upload_test_node_insert(Node $node) {
 
                         $found_nid = reset($query);
 
+                        $anomaly_location = $data['lat'].", ".$data['lon'];
+                        $anomaly_status = $data['status'];
+                        $anomaly_type = $data['type'];
+                        $anomaly_notes = $data['notes'];
+                        $lat = $data['lat'];
+                        $long = $data['lon'];
+
+                        //$image_fids
+
+                        $anomaly_node = Node::create([
+                        'type' => 'anomaly',
+                        'field_anomaly_location' => 'POINT ('.$lat.' '.$long.')',
+                        'field_anomaly_position' => 'on_site',
+                        'field_anomaly_status' => 'active',
+                        'field_anomaly_type' => '',
+                        'field_directions' => $cleaned_csv_direction_array,
+                        'field_anomaly_location' => $anomaly_location,
+                        'field_notes' => $anomaly_notes,
+                        ]);
+
+                        // Save the node.
+                        $anomaly_node->save();
+                        $nodes_created++;
+
                         $anomaly_history_date = $data['anomDate'];
                         $anomaly_history_photos = $data['pics'];
 
@@ -217,6 +244,9 @@ function upload_test_node_insert(Node $node) {
                         // Save the node.
                         $anomaly_history_node->save();     
                         $nodes_created++;
+
+                        //dump($anomaly_node);
+                        //dump($anomaly_history_node);
                     }
                 }
                 else{
@@ -258,6 +288,9 @@ function upload_test_node_insert(Node $node) {
                     // Save the node.
                     $anomaly_history_node->save();
                     $nodes_created++;
+
+                    //dump($anomaly_node);
+                    //dump($anomaly_history_node);
                 }
 
                 
@@ -265,6 +298,7 @@ function upload_test_node_insert(Node $node) {
         }
         fclose($handle);
 
+        
         //dd();
         \Drupal::messenger()->addMessage(t('@count nodes created successfully.', ['@count' => $nodes_created]));
 
