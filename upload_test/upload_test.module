@@ -46,16 +46,27 @@ function upload_test_node_insert(Node $node) {
                   if($full_filename)
                   {
                     //$last_zero_pos = strrpos($full_filename, '0'); // Find the last '0'
-                    preg_match('/[1-9]/', $full_filename, $matches, PREG_OFFSET_CAPTURE);
-                    $last_zero_pos = $matches[0][1];
+                    //preg_match('/[1-9]/', $full_filename, $matches, PREG_OFFSET_CAPTURE);
+                    //$last_zero_pos = $matches[0][1];
 
-                    $dot_pos = strrpos($full_filename, '.'); // Find the last '.' (for the extension)
+                    if (preg_match('/IMG_(\d+)\.[a-zA-Z]{2,4}/i', $full_filename, $matches)) {
+                        
+                        $number_string = $matches[1];
+
+                        // Convert the string to an integer to remove leading zeros (e.g., "0001" becomes 1)
+                        $number = (int) $number_string;
+                    }
+
+                    $extracted_part = $number;
+
+
+                    //$dot_pos = strrpos($full_filename, '.'); // Find the last '.' (for the extension)
 
                     // Ensure both characters are found and '0' is before '.'
-                    if ($last_zero_pos !== false && $dot_pos !== false && $last_zero_pos < $dot_pos) {
-                        // Extract the substring between the last '0' and the '.'
-                        $extracted_part = substr($full_filename, $last_zero_pos + 1, $dot_pos - ($last_zero_pos + 1));
-                    }
+                    //if ($last_zero_pos !== false && $dot_pos !== false && $last_zero_pos < $dot_pos) {
+                    //Extract the substring between the last '0' and the '.'
+                    //$extracted_part = substr($full_filename, $last_zero_pos + 1, $dot_pos - ($last_zero_pos + 1));
+                    //}
                   }
                   else{
                     $extracted_part = "";
@@ -182,8 +193,8 @@ function upload_test_node_insert(Node $node) {
 
                 $media_id_matches = [];
 
-                //dump($image_fids);
-                //dump($cleaned_csv_photo_array);
+                dump($image_fids);
+                dump($cleaned_csv_photo_array);
 
                 foreach ($image_fids as $image_id) {
                     if (in_array($image_id['filename'], $cleaned_csv_photo_array)) {
@@ -191,7 +202,7 @@ function upload_test_node_insert(Node $node) {
                     }
                 }
 
-                //dump($media_id_matches);
+                dump($media_id_matches);
 
                 // Create a new node for each row.
 
@@ -245,8 +256,8 @@ function upload_test_node_insert(Node $node) {
                         $anomaly_history_node->save();     
                         $nodes_created++;
 
-                        //dump($anomaly_node);
-                        //dump($anomaly_history_node);
+                        dump($anomaly_node);
+                        dump($anomaly_history_node);
                     }
                 }
                 else{
@@ -289,8 +300,8 @@ function upload_test_node_insert(Node $node) {
                     $anomaly_history_node->save();
                     $nodes_created++;
 
-                    //dump($anomaly_node);
-                    //dump($anomaly_history_node);
+                    dump($anomaly_node);
+                    dump($anomaly_history_node);
                 }
 
                 
@@ -299,7 +310,7 @@ function upload_test_node_insert(Node $node) {
         fclose($handle);
 
         
-        //dd();
+        dd();
         \Drupal::messenger()->addMessage(t('@count nodes created successfully.', ['@count' => $nodes_created]));
 
         \Drupal::logger('upload_test')->notice('@count nodes created from CSV.', ['@count' => $nodes_created]);
